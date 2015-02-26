@@ -696,9 +696,7 @@
         
         [UIView animateWithDuration:0.3f
                               delay:0
-             usingSpringWithDamping:0.85f
-              initialSpringVelocity:1.0f
-                            options:UIViewAnimationOptionCurveLinear
+                            options:UIViewAnimationOptionCurveEaseOut
                          animations:^{
                              self.transparentView.alpha = 0.4f;
                              self.center = CGPointMake(x, height - CGRectGetHeight(self.frame) / 2.0);
@@ -739,9 +737,7 @@
             
             [UIView animateWithDuration:0.3f
                                   delay:0
-                 usingSpringWithDamping:0.85f
-                  initialSpringVelocity:1.0f
-                                options:UIViewAnimationOptionCurveLinear
+                                options:UIViewAnimationOptionCurveEaseOut
                              animations:^{
                                  
                                  if (blurView) {
