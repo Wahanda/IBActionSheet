@@ -78,8 +78,6 @@ typedef void (^IBActionCallback)(IBActionSheet *actionSheet, NSInteger buttonInd
 
 - (NSInteger)numberOfButtons;
 - (NSString *)buttonTitleAtIndex:(NSInteger)index;
-- (void)rotateToCurrentOrientation;
-
 
 // fonts
 - (void)setFont:(UIFont *)font;
@@ -125,12 +123,10 @@ typedef void (^IBActionCallback)(IBActionSheet *actionSheet, NSInteger buttonInd
 - (id)initWithTopCornersRounded;
 - (id)initWithAllCornersRounded;
 - (id)initWithBottomCornersRounded;
-- (void)resizeForPortraitOrientation;
-- (void)resizeForLandscapeOrientation;
 - (void)setTextColor:(UIColor *)color;
 
 @property NSInteger index;
-@property IBActionSheetButtonCornerType cornerType;
+@property UIRectCorner cornerType;
 @property UIColor *originalTextColor, *highlightTextColor;
 @property UIColor *originalBackgroundColor, *highlightBackgroundColor;
 

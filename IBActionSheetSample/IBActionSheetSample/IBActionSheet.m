@@ -660,51 +660,35 @@
     
     [theView insertSubview:self.transparentView belowSubview:self];
     
-    CGRect theScreenRect = [UIScreen mainScreen].bounds;
+    float x = CGRectGetWidth(theView.frame) / 2;
     
-    float height;
-    float x;
+    CGRect selfFrame = self.frame;
+    selfFrame.size.width = CGRectGetWidth(theView.frame);
+    self.frame = selfFrame;
+    self.center = CGPointMake(x, CGRectGetHeight(theView.frame) + CGRectGetHeight(self.frame) / 2.0);
+    self.autoresizingMask = UIViewAutoresizingFlexibleTopMargin|UIViewAutoresizingFlexibleWidth;
     
-    if (UIInterfaceOrientationIsPortrait([[UIApplication sharedApplication] statusBarOrientation])) {
-        height = CGRectGetHeight(theScreenRect);
-        x = CGRectGetWidth(theView.frame) / 2.0;
-        self.transparentView.frame = CGRectMake(self.transparentView.center.x, self.transparentView.center.y, CGRectGetWidth(theScreenRect), CGRectGetHeight(theScreenRect));
-    } else {
-        height = CGRectGetWidth(theScreenRect);
-        x = CGRectGetHeight(theView.frame) / 2.0;
-        self.transparentView.frame = CGRectMake(self.transparentView.center.x, self.transparentView.center.y, CGRectGetHeight(theScreenRect), CGRectGetWidth(theScreenRect));
+    self.transparentView.frame = CGRectMake(0, 0, CGRectGetWidth(theView.frame), CGRectGetHeight(theView.frame));
+    self.transparentView.center = theView.center;
+    self.transparentView.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight;
+    
+    for (UIButton *button in self.buttons) {
+        CGRect buttonFrame = button.frame;
+        buttonFrame.size.width = CGRectGetWidth(theView.frame) - 16 * 2.;
+        button.frame = buttonFrame;
+        button.center = CGPointMake(self.center.x, button.center.y);
+        button.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     }
     
-    self.center = CGPointMake(x, height + CGRectGetHeight(self.frame) / 2.0);
-    self.transparentView.center = CGPointMake(x, height / 2.0);
-    
-    
-    if (SYSTEM_VERSION_LESS_THAN(@"7.0")) {
-        
-        
-        [UIView animateWithDuration:0.3f
-                              delay:0.0f
-                            options:UIViewAnimationOptionCurveEaseOut
-                         animations:^() {
-                             self.transparentView.alpha = 0.4f;
-                             self.center = CGPointMake(x, (height - 20) - CGRectGetHeight(self.frame) / 2.0);
-                             
-                         } completion:^(BOOL finished) {
-                             self.visible = YES;
-                         }];
-    } else {
-        
-        [UIView animateWithDuration:0.3f
-                              delay:0
-                            options:UIViewAnimationOptionCurveEaseOut
-                         animations:^{
-                             self.transparentView.alpha = 0.4f;
-                             self.center = CGPointMake(x, height - CGRectGetHeight(self.frame) / 2.0);
-                             
-                         } completion:^(BOOL finished) {
-                             self.visible = YES;
-                         }];
-    }
+    [UIView animateWithDuration:0.3f
+                          delay:0
+                        options:UIViewAnimationOptionCurveEaseOut
+                     animations:^{
+                         self.transparentView.alpha = 0.4f;
+                         self.center = CGPointMake(self.center.x, CGRectGetHeight(theView.frame) - CGRectGetHeight(self.frame) / 2.0);
+                     } completion:^(BOOL finished) {
+                         self.visible = YES;
+                     }];
 }
 
 - (void) cancelSelection {
@@ -724,7 +708,7 @@
                                 options:UIViewAnimationOptionCurveEaseOut
                              animations:^() {
                                  self.transparentView.alpha = 0.0f;
-                                 self.center = CGPointMake(CGRectGetWidth(self.frame) / 2.0, CGRectGetHeight([UIScreen mainScreen].bounds) + CGRectGetHeight(self.frame) / 2.0);
+                                 self.center = CGPointMake(self.center.x, CGRectGetHeight(self.superview.frame) + CGRectGetHeight(self.frame) / 2.0);
                                  
                              } completion:^(BOOL finished) {
                                  [self.transparentView removeFromSuperview];
@@ -745,7 +729,7 @@
                                  }
                                  
                                  self.transparentView.alpha = 0.0f;
-                                 self.center = CGPointMake(CGRectGetWidth(self.frame) / 2.0, CGRectGetHeight([UIScreen mainScreen].bounds) + CGRectGetHeight(self.frame) / 2.0);
+                                 self.center = CGPointMake(self.center.x, CGRectGetHeight(self.superview.frame) + CGRectGetHeight(self.frame) / 2.0);
                                  
                              } completion:^(BOOL finished) {
                                  [self.transparentView removeFromSuperview];
@@ -760,38 +744,6 @@
     }
     
 }
-
-- (void)rotateToCurrentOrientation {
-    
-    float width = SCREEN_WIDTH;
-    float height = SCREEN_HEIGHT;
-    
-    if (UIInterfaceOrientationIsPortrait([[UIApplication sharedApplication] statusBarOrientation])) {
-        
-        for (IBActionSheetButton * button in self.buttons) {
-            [button resizeForPortraitOrientation];
-        }
-        
-        [self.titleView resizeForPortraitOrientation];
-        [self setUpTheActionSheet];
-        
-    } else {
-        
-        for (IBActionSheetButton * button in self.buttons) {
-            [button resizeForLandscapeOrientation];
-        }
-        [self.titleView resizeForLandscapeOrientation];
-        [self setUpTheActionSheet];
-        
-        
-    }
-    
-    self.transparentView.frame = CGRectMake(0, 0, width, height);
-    self.transparentView.center = CGPointMake(width / 2.0, height / 2.0);
-    self.center = self.center = CGPointMake(width / 2.0, height - CGRectGetHeight(self.frame) / 2.0);
-    
-}
-
 
 #pragma mark IBActionSheet Color methods
 
@@ -950,84 +902,34 @@
     return self;
 }
 
+- (void)layoutSubviews
+{
+    [super layoutSubviews];
+    [self setMaskTo:self byRoundingCorners:self.cornerType];
+}
+
 - (id)initWithTopCornersRounded {
     self = [self init];
-    [self setMaskTo:self byRoundingCorners:UIRectCornerTopLeft | UIRectCornerTopRight];
-    self.cornerType = IBActionSheetButtonCornerTypeTopCornersRounded;
+    self.cornerType = UIRectCornerTopLeft | UIRectCornerTopRight;
     return self;
 }
 
 - (id)initWithBottomCornersRounded {
     self = [self init];
-    [self setMaskTo:self byRoundingCorners:UIRectCornerBottomLeft | UIRectCornerBottomRight];
-    self.cornerType = IBActionSheetButtonCornerTypeBottomCornersRounded;
+    self.cornerType = UIRectCornerBottomLeft | UIRectCornerBottomRight;
     return self;
 }
 
 - (id)initWithAllCornersRounded {
     self = [self init];
-    [self setMaskTo:self byRoundingCorners:UIRectCornerTopLeft | UIRectCornerTopRight | UIRectCornerBottomLeft | UIRectCornerBottomRight];
-    self.cornerType = IBActionSheetButtonCornerTypeAllCornersRounded;
+    //    [self setMaskTo:self byRoundingCorners:UIRectCornerTopLeft | UIRectCornerTopRight | UIRectCornerBottomLeft | UIRectCornerBottomRight];
+    self.cornerType = UIRectCornerTopLeft | UIRectCornerTopRight | UIRectCornerBottomLeft | UIRectCornerBottomRight;
     return self;
 }
 
 
 - (void)setTextColor:(UIColor *)color {
     [self setTitleColor:color forState:UIControlStateAll];
-}
-
-- (void)resizeForPortraitOrientation {
-    
-    self.frame = CGRectMake(0, 0, CGRectGetWidth([UIScreen mainScreen].bounds) - 16, CGRectGetHeight(self.frame));
-    
-    switch (self.cornerType) {
-        case IBActionSheetButtonCornerTypeNoCornersRounded:
-            break;
-            
-        case IBActionSheetButtonCornerTypeTopCornersRounded: {
-            [self setMaskTo:self byRoundingCorners:UIRectCornerTopLeft | UIRectCornerTopRight];
-            break;
-        }
-        case IBActionSheetButtonCornerTypeBottomCornersRounded: {
-            [self setMaskTo:self byRoundingCorners:UIRectCornerBottomLeft | UIRectCornerBottomRight];
-            break;
-        }
-            
-        case IBActionSheetButtonCornerTypeAllCornersRounded: {
-            [self setMaskTo:self byRoundingCorners:UIRectCornerTopLeft | UIRectCornerTopRight | UIRectCornerBottomLeft | UIRectCornerBottomRight];
-            break;
-        }
-            
-        default:
-            break;
-    }
-}
-
-- (void)resizeForLandscapeOrientation {
-    self.frame = CGRectMake(0, 0, CGRectGetHeight([UIScreen mainScreen].bounds) - 16, CGRectGetHeight(self.frame));
-    
-    switch (self.cornerType) {
-        case IBActionSheetButtonCornerTypeNoCornersRounded:
-            break;
-            
-        case IBActionSheetButtonCornerTypeTopCornersRounded: {
-            [self setMaskTo:self byRoundingCorners:UIRectCornerTopLeft | UIRectCornerTopRight];
-            break;
-        }
-        case IBActionSheetButtonCornerTypeBottomCornersRounded: {
-            [self setMaskTo:self byRoundingCorners:UIRectCornerBottomLeft | UIRectCornerBottomRight];
-            break;
-        }
-            
-        case IBActionSheetButtonCornerTypeAllCornersRounded: {
-            [self setMaskTo:self byRoundingCorners:UIRectCornerTopLeft | UIRectCornerTopRight | UIRectCornerBottomLeft | UIRectCornerBottomRight];
-            break;
-        }
-            
-        default:
-            break;
-    }
-    
 }
 
 - (void)setMaskTo:(UIView*)view byRoundingCorners:(UIRectCorner)corners

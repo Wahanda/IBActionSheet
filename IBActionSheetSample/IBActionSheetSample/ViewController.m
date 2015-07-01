@@ -144,16 +144,6 @@
         [self setUpForLandscape];
     }
     
-    if (self.standardIBAS.visible) {
-        [self.standardIBAS rotateToCurrentOrientation];
-    }
-    if (self.customIBAS.visible) {
-        [self.customIBAS rotateToCurrentOrientation];
-    }
-    if (self.funkyIBAS.visible) {
-        [self.funkyIBAS rotateToCurrentOrientation];
-    }
-    
 }
 
 - (void)setUpForPortrait {
