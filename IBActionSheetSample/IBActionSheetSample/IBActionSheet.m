@@ -672,6 +672,8 @@
     self.transparentView.center = theView.center;
     self.transparentView.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight;
     
+    self.titleView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+    
     for (UIButton *button in self.buttons) {
         CGRect buttonFrame = button.frame;
         buttonFrame.size.width = CGRectGetWidth(theView.frame) - 8 * 2.;
@@ -922,7 +924,6 @@
 
 - (id)initWithAllCornersRounded {
     self = [self init];
-    //    [self setMaskTo:self byRoundingCorners:UIRectCornerTopLeft | UIRectCornerTopRight | UIRectCornerBottomLeft | UIRectCornerBottomRight];
     self.cornerType = UIRectCornerTopLeft | UIRectCornerTopRight | UIRectCornerBottomLeft | UIRectCornerBottomRight;
     return self;
 }
@@ -972,7 +973,7 @@
     self.titleLabel.numberOfLines = 0;
     self.titleLabel.text = title;
     self.titleLabel.backgroundColor = [UIColor clearColor];
-    
+    self.titleLabel.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin|UIViewAutoresizingFlexibleRightMargin;
     if (font) {
         self.titleLabel.font = font;
     } else {
@@ -989,11 +990,16 @@
         self.frame = CGRectMake(0, 0, width - 16, CGRectGetHeight(self.titleLabel.frame) + 30);
     }
     
-    [self setMaskTo:self byRoundingCorners:UIRectCornerTopLeft | UIRectCornerTopRight];
     [self addSubview:self.titleLabel];
     self.titleLabel.center = self.center;
     
     return self;
+}
+
+- (void)layoutSubviews
+{
+    [super layoutSubviews];
+    [self setMaskTo:self byRoundingCorners:UIRectCornerTopLeft | UIRectCornerTopRight];
 }
 
 - (void)resizeForPortraitOrientation {
