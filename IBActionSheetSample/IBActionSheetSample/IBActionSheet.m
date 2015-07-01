@@ -672,6 +672,9 @@
     self.transparentView.center = theView.center;
     self.transparentView.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight;
     
+    CGRect titleViewFrame = self.titleView.frame;
+    titleViewFrame.size.width = CGRectGetWidth(theView.frame) - 8 * 2.;
+    self.titleView.frame = titleViewFrame;
     self.titleView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     
     for (UIButton *button in self.buttons) {
