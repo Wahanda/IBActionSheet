@@ -674,7 +674,7 @@
     
     for (UIButton *button in self.buttons) {
         CGRect buttonFrame = button.frame;
-        buttonFrame.size.width = CGRectGetWidth(theView.frame) - 16 * 2.;
+        buttonFrame.size.width = CGRectGetWidth(theView.frame) - 8 * 2.;
         button.frame = buttonFrame;
         button.center = CGPointMake(self.center.x, button.center.y);
         button.autoresizingMask = UIViewAutoresizingFlexibleWidth;
