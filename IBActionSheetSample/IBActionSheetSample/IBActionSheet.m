@@ -41,6 +41,7 @@
     self.shouldCancelOnTouch = YES;
     self.cancelButtonIndex = -1;
     self.destructiveButtonIndex = -1;
+    self.shouldCancelOnButtonClick = YES;
     
     self.transparentView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth([UIScreen mainScreen].bounds), CGRectGetHeight([UIScreen mainScreen].bounds))];
     self.transparentView.backgroundColor = [UIColor blackColor];
@@ -618,7 +619,9 @@
     
     if(self.delegate) [self.delegate actionSheet:self clickedButtonAtIndex:button.index];
     if(self.callback) self.callback(self, button.index);
-    self.shouldCancelOnTouch = YES;
+    if (self.shouldCancelOnButtonClick) {
+        self.shouldCancelOnTouch = YES;
+    }
     [self removeFromView];
 }
 
