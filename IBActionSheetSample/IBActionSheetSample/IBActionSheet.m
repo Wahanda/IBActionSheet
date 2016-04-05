@@ -378,7 +378,9 @@
         if (self.hasCancelButton) {
             [self addSubview:[self.buttons lastObject]];
             [[self.buttons lastObject] setCenter:pointOfReference];
-            [[self.buttons objectAtIndex:0] setCenter:CGPointMake(pointOfReference.x, pointOfReference.y - 52)];
+            if (self.buttons.lastObject != [self.buttons objectAtIndex:0]) {
+                [[self.buttons objectAtIndex:0] setCenter:CGPointMake(pointOfReference.x, pointOfReference.y - 52)];
+            }
             pointOfReference = CGPointMake(pointOfReference.x, pointOfReference.y - 52);
             whereToStop = (int)self.buttons.count - 2;
         } else {
@@ -423,7 +425,9 @@
         if (self.hasCancelButton) {
             [self addSubview:[self.buttons lastObject]];
             [[self.buttons lastObject] setCenter:pointOfReference];
-            [[self.buttons objectAtIndex:0] setCenter:CGPointMake(pointOfReference.x, pointOfReference.y - 52)];
+            if (self.buttons.lastObject != [self.buttons objectAtIndex:0]) {
+                [[self.buttons objectAtIndex:0] setCenter:CGPointMake(pointOfReference.x, pointOfReference.y - 52)];
+            }
             pointOfReference = CGPointMake(pointOfReference.x, pointOfReference.y - 52);
             whereToStop = (int)self.buttons.count - 2;
         } else {
@@ -826,7 +830,7 @@
 #pragma mark IBActionSheet Other Properties methods
 
 - (void)setTitle:(NSString *)title {
-    self.titleView = [[IBActionSheetTitleView alloc] initWithTitle:title font:nil];
+    self.titleView = [[IBActionSheetTitleView alloc] initWithTitle:title font:nil allRoundedCorners:self.buttons.count <= 1];
     [self setUpTheActionSheet];
 }
 
@@ -858,7 +862,7 @@
     if (self.titleView) {
         UIColor *backgroundColor = self.titleView.backgroundColor;
         UIColor *textColor = self.titleView.titleLabel.textColor;
-        self.titleView = [[IBActionSheetTitleView alloc] initWithTitle:self.titleView.titleLabel.text font:font];
+        self.titleView = [[IBActionSheetTitleView alloc] initWithTitle:self.titleView.titleLabel.text font:font allRoundedCorners:self.buttons.count <= 1];
         self.titleView.backgroundColor = backgroundColor;
         self.titleView.titleLabel.textColor = textColor;
         [self setUpTheActionSheet];
@@ -954,11 +958,18 @@
 
 #pragma mark - IBActionSheetTitleView
 
+@interface IBActionSheetTitleView()
+
+@property (nonatomic, assign) BOOL allRounded;
+
+@end
+
 @implementation IBActionSheetTitleView
 
-- (id)initWithTitle:(NSString *)title font:(UIFont *)font {
+- (id)initWithTitle:(NSString *)title font:(UIFont *)font allRoundedCorners:(BOOL)allRounded {
     
     self = [self init];
+    self.allRounded = allRounded;
     
     float width;
     float labelBuffer;
@@ -1002,24 +1013,33 @@
     return self;
 }
 
+- (UIRectCorner)roundedCorners
+{
+    if (self.allRounded) {
+        return UIRectCornerAllCorners;
+    } else {
+        return UIRectCornerTopLeft | UIRectCornerTopRight;
+    }
+}
+
 - (void)layoutSubviews
 {
     [super layoutSubviews];
-    [self setMaskTo:self byRoundingCorners:UIRectCornerTopLeft | UIRectCornerTopRight];
+    [self setMaskTo:self byRoundingCorners:self.roundedCorners];
 }
 
 - (void)resizeForPortraitOrientation {
     
     self.frame = CGRectMake(0, 0, CGRectGetWidth([UIScreen mainScreen].bounds) - 16, CGRectGetHeight(self.frame));
     self.titleLabel.frame = CGRectMake(0, 0, CGRectGetWidth([UIScreen mainScreen].bounds) - 24, 44);
-    [self setMaskTo:self byRoundingCorners:UIRectCornerTopLeft | UIRectCornerTopRight];
+    [self setMaskTo:self byRoundingCorners:self.roundedCorners];
 }
 
 - (void)resizeForLandscapeOrientation {
     
     self.frame = CGRectMake(0, 0, CGRectGetHeight([UIScreen mainScreen].bounds) - 16, CGRectGetHeight(self.frame));
     self.titleLabel.frame = CGRectMake(0, 0, CGRectGetHeight([UIScreen mainScreen].bounds) - 44, 44);
-    [self setMaskTo:self byRoundingCorners:UIRectCornerTopLeft | UIRectCornerTopRight];
+    [self setMaskTo:self byRoundingCorners:self.roundedCorners];
 }
 
 - (void)setMaskTo:(UIView*)view byRoundingCorners:(UIRectCorner)corners

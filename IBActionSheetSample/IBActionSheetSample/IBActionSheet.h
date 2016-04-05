@@ -140,7 +140,7 @@ typedef void (^IBActionCallback)(IBActionSheet *actionSheet, NSInteger buttonInd
 
 - (void)resizeForPortraitOrientation;
 - (void)resizeForLandscapeOrientation;
-- (id)initWithTitle:(NSString *)title font:(UIFont *)font;
+- (id)initWithTitle:(NSString *)title font:(UIFont *)font allRoundedCorners:(BOOL)allRounded;
 
 
 
