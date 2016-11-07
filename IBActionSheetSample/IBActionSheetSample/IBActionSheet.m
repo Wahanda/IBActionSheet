@@ -669,26 +669,49 @@
     
     float x = CGRectGetWidth(theView.frame) / 2;
     
-    CGRect selfFrame = self.frame;
-    selfFrame.size.width = CGRectGetWidth(theView.frame);
-    self.frame = selfFrame;
-    self.center = CGPointMake(x, CGRectGetHeight(theView.frame) + CGRectGetHeight(self.frame) / 2.0);
-    self.autoresizingMask = UIViewAutoresizingFlexibleTopMargin|UIViewAutoresizingFlexibleWidth;
-    
     self.transparentView.frame = CGRectMake(0, 0, CGRectGetWidth(theView.frame), CGRectGetHeight(theView.frame));
     self.transparentView.center = theView.center;
     self.transparentView.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight;
     
-    CGRect titleViewFrame = self.titleView.frame;
-    titleViewFrame.size.width = CGRectGetWidth(theView.frame) - 8 * 2.;
-    self.titleView.frame = titleViewFrame;
-    self.titleView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+    CGFloat titleViewHeightDiff = 0;
+    
+    if (self.titleView) {
+        CGFloat titleViewWidth = CGRectGetWidth(theView.frame) - 8 * 2.;
+        CGRect titleLabelFrame = self.titleView.titleLabel.frame;
+        titleLabelFrame.size = [self.titleView.titleLabel sizeThatFits:CGSizeMake(titleViewWidth - 8. * 2, CGFLOAT_MAX)];
+        self.titleView.titleLabel.frame = titleLabelFrame;
+        
+        CGFloat titleViewHeight = CGRectGetHeight(self.titleView.titleLabel.frame) + CGRectGetMinY(self.titleView.titleLabel.frame) * 2;
+        
+        CGRect titleViewFrame = self.titleView.frame;
+        titleViewHeightDiff = titleViewHeight - CGRectGetHeight(titleViewFrame);
+        titleViewFrame.size.width = CGRectGetWidth(theView.frame) - 8 * 2.;
+        titleViewFrame.size.height = titleViewHeight;
+        self.titleView.frame = titleViewFrame;
+        self.titleView.titleLabel.center = CGPointMake(titleViewWidth / 2, self.titleView.titleLabel.center.y);
+    }
+    
+    CGRect selfFrame = self.frame;
+    selfFrame.size.width = CGRectGetWidth(theView.frame);
+    if (self.titleView) {
+        selfFrame.size.height += titleViewHeightDiff;
+    }
+    self.frame = selfFrame;
+    self.center = CGPointMake(x, CGRectGetHeight(theView.frame) + CGRectGetHeight(self.frame) / 2.0);
+    self.autoresizingMask = UIViewAutoresizingFlexibleTopMargin|UIViewAutoresizingFlexibleWidth;
+    
+    if (self.titleView) {
+        self.titleView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+    }
     
     for (UIButton *button in self.buttons) {
         CGRect buttonFrame = button.frame;
         buttonFrame.size.width = CGRectGetWidth(theView.frame) - 8 * 2.;
+        if (self.titleView) {
+            buttonFrame.origin.y += titleViewHeightDiff;
+        }
         button.frame = buttonFrame;
-        button.center = CGPointMake(self.center.x, button.center.y);
+        button.center = CGPointMake(theView.center.x, button.center.y);
         button.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     }
     
