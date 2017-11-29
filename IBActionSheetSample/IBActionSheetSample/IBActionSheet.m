@@ -823,7 +823,7 @@
 }
 
 - (UIColor *)buttonBackgroundColorAtIndex:(NSInteger)index {
-    return [[self.buttons objectAtIndex:index] backgroundColor];
+    return [UIColor colorWithCGColor:[[self.buttons objectAtIndex:index] backgroundColor]];
 }
 
 - (UIColor *)buttonTextColorAtIndex:(NSInteger)index {
