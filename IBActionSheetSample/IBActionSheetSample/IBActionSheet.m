@@ -715,12 +715,16 @@
         button.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     }
     
+    CGFloat bottomInset = 0;
+    if (@available(iOS 11.0, *)) {
+        bottomInset = theView.safeAreaInsets.bottom;
+    }
     [UIView animateWithDuration:0.3f
                           delay:0
                         options:UIViewAnimationOptionCurveEaseOut
                      animations:^{
                          self.transparentView.alpha = 0.4f;
-                         self.center = CGPointMake(self.center.x, CGRectGetHeight(theView.frame) - CGRectGetHeight(self.frame) / 2.0);
+                         self.center = CGPointMake(self.center.x, CGRectGetHeight(theView.frame) - CGRectGetHeight(self.frame) / 2.0 - bottomInset);
                      } completion:^(BOOL finished) {
                          self.visible = YES;
                      }];
